@@ -1,0 +1,19 @@
+ChangeColorIntent change the color to {Color}
+ChangeColorIntent switch color to {Color}
+ChangeColorIntent set the color to {Color}
+ChangeColorIntent color to {Color}
+ChangeColorIntent {Color} color
+ChangeColorIntent {Color}
+
+ChangeModeIntent change the mode to {Mode}
+ChangeModeIntent switch mode to {Mode}
+ChangeModeIntent set the mode to {Mode}
+ChangeModeIntent mode to {Mode}
+ChangeModeIntent {Mode} mode
+ChangeModeIntent {Mode}
+
+ChangeColorAndModeIntent change to {Mode} {Color}
+ChangeColorAndModeIntent switch to {Mode} {Color}
+ChangeColorAndModeIntent set {Mode} {Color}
+ChangeColorAndModeIntent {Mode} {Color}
+ChangeColorAndModeIntent {Color} {Mode}

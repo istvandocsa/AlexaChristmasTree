@@ -12,6 +12,7 @@ package org.kecskusz.alexachristmastree
 import java.util.HashSet
 
 import com.amazon.speech.speechlet.lambda.SpeechletRequestStreamHandler
+import org.kecskusz.alexachristmastree.config.ConfigurationProvider
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -29,14 +30,7 @@ class AlexaChristmasTreeSpeechletRequestStreamHandler : SpeechletRequestStreamHa
 
     companion object {
         private val LOG = LoggerFactory.getLogger(AlexaChristmasTreeSpeechletRequestStreamHandler::class.java)
-        private val supportedApplicationIds = HashSet<String>()
-
-        init {
-            /*
-         * This Id can be found on https://developer.amazon.com/edw/home.html#/ "Edit" the relevant
-         * Alexa Skill and put the relevant Application Ids in this Set.
-         */
-            supportedApplicationIds.add("amzn1.ask.skill.4990256c-1174-4513-aebc-edaccec28b03")
-        }
+        private val CONFIG = ConfigurationProvider().getConfig()
+        private val supportedApplicationIds = setOf<String>(CONFIG.supportedApplicationId)
     }
 }

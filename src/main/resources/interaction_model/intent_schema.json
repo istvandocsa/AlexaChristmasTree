@@ -1,0 +1,41 @@
+{
+  "intents": [
+    {
+      "intent": "AMAZON.PauseIntent"
+    },
+    {
+      "intent": "AMAZON.ResumeIntent"
+    },
+    {
+      "intent": "ChangeColorIntent",
+      "slots": [
+        {
+          "name": "Color",
+          "type": "COLORS"
+        }
+      ]
+    },
+    {
+      "intent": "ChangeModeIntent",
+      "slots": [
+        {
+          "name": "Mode",
+          "type": "MODES"
+        }
+      ]
+    },
+    {
+      "intent": "ChangeColorAndModeIntent",
+      "slots": [
+        {
+          "name": "Color",
+          "type": "COLORS"
+        },
+        {
+          "name": "Mode",
+          "type": "MODES"
+        }
+      ]
+    }
+  ]
+}

@@ -18,5 +18,5 @@ class ConfigurationProvider {
         private val config = mapper.readValue(File("config.yaml"), Configuration::class.java)
     }
 
-    data class Configuration(val awsAccessKey: String, val awsSecretKey: String, val awsRegion: String, val awsIoTEndpoint: String)
+    data class Configuration(val awsAccessKey: String, val awsSecretKey: String, val awsRegion: String, val awsIoTEndpoint: String, val thingName: String, val supportedApplicationId: String)
 }

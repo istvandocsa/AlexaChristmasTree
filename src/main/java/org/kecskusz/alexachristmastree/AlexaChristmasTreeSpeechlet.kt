@@ -1,12 +1,3 @@
-/**
- * Copyright 2014-2015 Amazon.com, Inc. or its affiliates. All Rights Reserved.
-
- * Licensed under the Apache License, Version 2.0 (the "License"). You may not use this file except in compliance with the License. A copy of the License is located at
-
- * http://aws.amazon.com/apache2.0/
-
- * or in the "license" file accompanying this file. This file is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the License for the specific language governing permissions and limitations under the License.
- */
 package org.kecskusz.alexachristmastree
 
 import org.slf4j.Logger
@@ -23,115 +14,54 @@ import com.amazon.speech.speechlet.SpeechletException
 import com.amazon.speech.speechlet.SpeechletResponse
 import com.amazon.speech.ui.PlainTextOutputSpeech
 import com.amazon.speech.ui.Reprompt
-import com.amazon.speech.ui.SimpleCard
-import org.kecskusz.alexachristmastree.iot.ChristmasTreeShadowUpdater
-import org.kecskusz.alexachristmastree.model.DesiredChristmasTreeState
+import org.kecskusz.alexachristmastree.intent.ChangeIntentHandler
+import org.kecskusz.alexachristmastree.intent.HelpIntentHandler
+import org.kecskusz.alexachristmastree.intent.IntentHandler
+import java.util.*
 
 /**
  * This sample shows how to create a simple speechlet for handling speechlet requests.
  */
-class AlexaChristmasTreeSpeechlet : Speechlet {
+class AlexaChristmasTreeSpeechlet : Speechlet{
 
     @Throws(SpeechletException::class)
     override fun onSessionStarted(request: SessionStartedRequest, session: Session) {
-        LOG.info("onSessionStarted requestId={}, sessionId={}", request.requestId,
-                session.sessionId)
-        // any initialization logic goes here
+        LOG.info("onSessionStarted requestId = ${request.requestId}, sessionId = ${session.sessionId}")
     }
 
     @Throws(SpeechletException::class)
     override fun onLaunch(request: LaunchRequest, session: Session): SpeechletResponse {
-        LOG.info("onLaunch requestId={}, sessionId={}", request.requestId,
-                session.sessionId)
-        return welcomeResponse
+        //TODO: Refactor
+        LOG.info("onLaunch requestId = ${request.requestId}, sessionId = ${session.sessionId}")
+
+        val speechText = "Hi there, I am your christmas tree that is not just beautiful, but also smart. You can ask me to change the color, the mode."
+        val speech = PlainTextOutputSpeech()
+        speech.text = speechText
+        val reprompt = Reprompt()
+        reprompt.outputSpeech = speech
+
+        return SpeechletResponse.newAskResponse(speech, reprompt)
     }
 
     @Throws(SpeechletException::class)
     override fun onIntent(request: IntentRequest, session: Session): SpeechletResponse {
-        LOG.info("onIntent requestId={}, sessionId={}", request.requestId,
-                session.sessionId)
+        LOG.info("onIntent requestId = ${request.requestId}, sessionId = ${session.sessionId}")
 
         val intent = request.intent
-        val intentName = intent?.name
-
-        if ("ChangeColorIntent" == intentName) {
-            return getChangeColorResponse(intent)
-        } else if ("AMAZON.HelpIntent" == intentName) {
-            return helpResponse
-        } else {
-            throw SpeechletException("Invalid Intent")
+        try {
+            return intentHandlers.first { it.matchesIntent(intent) }.handle(intent)
+        } catch (e : NoSuchElementException) {
+            throw SpeechletException("Invalid intent.")
         }
     }
 
     @Throws(SpeechletException::class)
     override fun onSessionEnded(request: SessionEndedRequest, session: Session) {
-        LOG.info("onSessionEnded requestId={}, sessionId={}", request.requestId,
-                session.sessionId)
-        // any cleanup logic goes here
+        LOG.info("onSessionEnded requestId = ${request.requestId}, sessionId = ${session.sessionId}")
     }
-
-    /**
-     * Creates and returns a `SpeechletResponse` with a welcome message.
-
-     * @return SpeechletResponse spoken and visual response for the given intent
-     */
-    private // Create the plain text output.
-            // Create reprompt
-    val welcomeResponse: SpeechletResponse
-        get() {
-            val speechText = "Hi there, I am your christmas tree that is not just beautiful, but also smart. You can ask me to change the color, the mode."
-            val speech = PlainTextOutputSpeech()
-            speech.text = speechText
-            val reprompt = Reprompt()
-            reprompt.outputSpeech = speech
-
-            return SpeechletResponse.newAskResponse(speech, reprompt)
-        }
-
-    /**
-     * Creates a `SpeechletResponse` for the hello intent.
-
-     * @return SpeechletResponse spoken and visual response for the given intent
-     * *
-     * @param intent
-     */
-    private fun getChangeColorResponse(intent: Intent): SpeechletResponse {
-        val intendedColor = intent.getSlot("Color").value
-        val speechText = "Changing color to " + intendedColor
-        christmasTreeShadowUpdater.updateTreeState(DesiredChristmasTreeState(intendedColor, "steady"))
-
-        // Create the Simple card content.
-        val card = SimpleCard()
-        card.title = "Color change"
-        card.content = speechText
-
-        // Create the plain text output.
-        val speech = PlainTextOutputSpeech()
-        speech.text = speechText
-
-        return SpeechletResponse.newTellResponse(speech, card)
-    }
-
-    /**
-     * Creates a `SpeechletResponse` for the help intent.
-
-     * @return SpeechletResponse spoken and visual response for the given intent
-     */
-    private // Create the plain text output.
-            // Create reprompt
-    val helpResponse: SpeechletResponse
-        get() {
-            val speechText = "Never forget, I am an awesome christmas tree. Ask me to change the color or the mode!"
-            val speech = PlainTextOutputSpeech()
-            speech.text = speechText
-            val reprompt = Reprompt()
-            reprompt.outputSpeech = speech
-
-            return SpeechletResponse.newAskResponse(speech, reprompt)
-        }
 
     companion object {
         private val LOG = LoggerFactory.getLogger(AlexaChristmasTreeSpeechlet::class.java)
-        private val christmasTreeShadowUpdater = ChristmasTreeShadowUpdater()
+        private val intentHandlers : MutableSet<IntentHandler> = mutableSetOf(ChangeIntentHandler(), HelpIntentHandler())
     }
 }
