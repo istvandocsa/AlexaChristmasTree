@@ -24,6 +24,8 @@ import com.amazon.speech.speechlet.SpeechletResponse
 import com.amazon.speech.ui.PlainTextOutputSpeech
 import com.amazon.speech.ui.Reprompt
 import com.amazon.speech.ui.SimpleCard
+import org.kecskusz.alexachristmastree.iot.ChristmasTreeShadowUpdater
+import org.kecskusz.alexachristmastree.model.DesiredChristmasTreeState
 
 /**
  * This sample shows how to create a simple speechlet for handling speechlet requests.
@@ -94,7 +96,9 @@ class AlexaChristmasTreeSpeechlet : Speechlet {
      * @param intent
      */
     private fun getChangeColorResponse(intent: Intent): SpeechletResponse {
-        val speechText = "Changing color to " + intent.getSlot("Color").value
+        val intendedColor = intent.getSlot("Color").value
+        val speechText = "Changing color to " + intendedColor
+        christmasTreeShadowUpdater.updateTreeState(DesiredChristmasTreeState(intendedColor, "steady"))
 
         // Create the Simple card content.
         val card = SimpleCard()
@@ -128,5 +132,6 @@ class AlexaChristmasTreeSpeechlet : Speechlet {
 
     companion object {
         private val LOG = LoggerFactory.getLogger(AlexaChristmasTreeSpeechlet::class.java)
+        private val christmasTreeShadowUpdater = ChristmasTreeShadowUpdater()
     }
 }
